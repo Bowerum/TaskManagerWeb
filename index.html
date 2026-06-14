@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Список задач</h1>
+        </div>
+
+        <h3>Поиск задачи по ID</h3>
+
+        <div class="controls">
+            <input type="number" id="taskIdInput" placeholder="Введите ID задачи">
+
+            <button onclick="searchTask()">Найти</button>
+            <button onclick="loadTasks()">Все задачи</button>
+            <button onclick="openCreateModal()"> Создать задачу</button>
+            <button onclick="openEditModal()"> Редактировать задачу</button>
+            <button onclick="deleteTask()"> Удалить задачу</button>
+        </div>
+        <div class="filters">
+
+            <select id="statusFilter">
+                <option value="">Все статусы</option>
+            </select>
+
+            <select id="assigneeFilter">
+                <option value="">Все исполнители</option>
+            </select>
+
+            <button onclick="applyFilters()">
+                Применить
+            </button>
+
+            <button onclick="clearFilters()">
+                Сбросить
+            </button>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Статус</th>
+                    <th>Создатель</th>
+                    <th>Исполнитель</th>
+                    <th>Дата Создания</th>
+                    <th>Дедлайн</th>
+                    <th>Дата выполнения</th>
+                </tr>
+            </thead>
+
+            <tbody id="tasksTable"></tbody>
+        </table>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div id="createForm">
+                <h2>Создать задачу</h2>
+                <input type="text" id="title" placeholder="Название">
+                <input type="text" id="description" placeholder="Описание">
+                <select id="createAssigneeId">
+                    <option value="" selected disabled hidden>Выберите исполнителя</option>
+                </select>
+            </div>
+
+            <div id="editForm" style="display: none;">
+
+                <h2>Редактировать задачу</h2>
+
+                <label>Название</label>
+                <input type="text" id="editTitle" placeholder="Название">
+                <label>Описание</label>
+                <input type="text" id="editDescription" placeholder="Описание">
+                <label>Статус</label>
+                <select id="editStatusId">
+                </select>
+                <label>Исполнитель</label>
+                <select id="editAssigneeId">
+                    <option value="" selected disabled hidden>Выберите исполнителя</option>
+                </select>
+                <label>Дедлайн</label>
+                <input type="datetime-local" id="editDueDate">
+
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="saveTask()">Сохранить</button>
+                <button onclick="closeModal()">Отмена</button>
+            </div>
+
+        </div>
+
+        <script src="/js/utils.js"></script>
+        <script src="/js/users.js"></script>
+        <script src="/js/tasks.js"></script>
+        <script src="/js/modal.js"></script>
+        <script src="/js/statuses.js"></script>
+
+        <script>
+            loadTasks();
+            loadUsers();
+            loadStatuses();
+        </script>
+</body>
+
+</html>

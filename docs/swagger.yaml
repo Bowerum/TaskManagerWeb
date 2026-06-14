@@ -1,0 +1,322 @@
+basePath: /
+definitions:
+  models.StatusModel:
+    properties:
+      name:
+        type: string
+      statusId:
+        type: integer
+    type: object
+  models.TaskModel:
+    properties:
+      assigneeId:
+        type: integer
+      completedAt:
+        type: string
+      createdAt:
+        type: string
+      creatorId:
+        type: integer
+      description:
+        type: string
+      dueDate:
+        type: string
+      statusId:
+        type: integer
+      taskId:
+        type: integer
+      title:
+        type: string
+    type: object
+  request.CreateTaskRequest:
+    properties:
+      assigneeId:
+        type: integer
+      creatorId:
+        type: integer
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  response.TaskResponse:
+    properties:
+      assigneeName:
+        type: string
+      completedAt:
+        type: string
+      createdAt:
+        type: string
+      creatorName:
+        type: string
+      description:
+        type: string
+      dueDate:
+        type: string
+      status:
+        type: string
+      taskId:
+        type: integer
+      title:
+        type: string
+    type: object
+  response.UserResponse:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      userId:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API для задач
+  title: TaskManager API
+  version: "1.0"
+paths:
+  /statuses:
+    get:
+      description: Возвращает все возможные статусы задач
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.StatusModel'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список статусов
+      tags:
+      - statuses
+  /tasks:
+    get:
+      description: Возвращает все задачи с возможностью фильтрации по статусу и исполнителю
+      parameters:
+      - description: ID статуса для фильтрации
+        in: query
+        name: statusId
+        type: string
+      - description: ID исполнителя для фильтрации
+        in: query
+        name: assigneeId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение списка задач
+          schema:
+            items:
+              $ref: '#/definitions/response.TaskResponse'
+            type: array
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список задач
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новую задачу в систему
+      parameters:
+      - description: Данные задачи
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать новую задачу
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      description: Удаляет задачу по ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить задачу
+      tags:
+      - tasks
+    get:
+      description: Возвращает задачу по указанному идентификатору
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить задачу по ID
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующую задачу по ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные задачи
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/models.TaskModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TaskModel'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить задачу
+      tags:
+      - tasks
+  /tasks/edit/{id}:
+    get:
+      description: Возвращает задачу по ID для формы редактирования
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TaskModel'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить задачу для редактирования
+      tags:
+      - tasks
+  /users:
+    get:
+      description: Возвращает всех пользователей системы
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.UserResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список пользователей
+      tags:
+      - users
+swagger: "2.0"
