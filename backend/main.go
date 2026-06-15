@@ -11,7 +11,9 @@ import (
 	"taskmanager/backend/database"
 	_ "taskmanager/backend/docs"
 	"taskmanager/backend/handlers"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,9 +24,15 @@ func main() {
 
 	database.Connect()
 
-	router.LoadHTMLFiles("index.html")
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.POST("/login", handlers.Login)
 
 	router.GET("/tasks", handlers.GetTasks)
 	router.GET("/tasks/edit/:id", handlers.GetTaskForEdit)
@@ -39,6 +47,8 @@ func main() {
 	router.PUT("/tasks/:id", handlers.UpdateTask)
 
 	router.DELETE("/tasks/:id", handlers.DeleteTask)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	fmt.Println("App started")
 
