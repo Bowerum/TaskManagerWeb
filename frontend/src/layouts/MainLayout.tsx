@@ -1,46 +1,44 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Role, RoleNames, useAuthStore } from "../store/authStore";
+import "../css/layout.css";
+import Panel from "../components/Panel";
 
 export default function MainLayout() {
+
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+
+    if (!user) return null;
+
+  };
+
   return (
-    <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
-      <header
-        style={{
-          display: "flex",
-          gap: "15px",
-          padding: "12px 20px",
-          background: "#222",
-          color: "white",
-          alignItems: "center",
-        }}
-      >
-        <strong>Управление задачами</strong>
+    <div className="layout">
 
-        <Link style={{ color: "white" }} to="/">
-          Домашняя
-        </Link>
-        <Link style={{ color: "white" }} to="/tasks">
-          Задачи
-        </Link>
-        <Link style={{ color: "white" }} to="/profile">
-          Профиль
-        </Link>
-        <Link style={{ color: "white" }} to="/admin">
-          Админ
-        </Link>
-
-        <div style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
-          <Link style={{ color: "white" }} to="/login">
-            Login
-          </Link>
-          <Link style={{ color: "white" }} to="/register">
-            Register
-          </Link>
+      <header className="header">
+        <div className="header-left">
+          <h2>Управление задачами</h2>
+          <p className="user">
+            {user && `${user.firstName} ${user.lastName} ${RoleNames[user.roleId]}`}
+          </p>
         </div>
+
+        <button className="logout" onClick={handleLogout}>
+          Выйти
+        </button>
       </header>
 
-      <main style={{ flex: 1, padding: "20px" }}>
+      <Panel />
+      {/*  <NavLink to="/tasks">Все задачи</NavLink>
+        <NavLink to="/my-tasks">Мои задачи</NavLink>
+       {/* <NavLink to="/tasks/create">Создать задачу</NavLink> 
+        <NavLink to="/users">Все пользователи</NavLink>*/}
+      <main className="content">
         <Outlet />
       </main>
     </div>

@@ -2,24 +2,28 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export const Role = {
-  Executor: 1,
+  Admin: 1,
   Manager: 2,
-  Admin: 3,
+  Executor: 3,
 }
+export const RoleNames = {
+  [Role.Admin]: "Администратор",
+  [Role.Manager]: "Менеджер",
+  [Role.Executor]: "Исполнитель",
+} as const;
 
 export type Role = typeof Role[keyof typeof Role];
 
 export interface User {
-  id: number;
-  email: string;
-  name: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
   roleId: Role;
 }
 
 interface AuthState {
   user: User | null;
   token: string | null;
-
   login: (token: string, user: User) => void;
   logout: () => void;
 }
@@ -43,9 +47,8 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: "auth-storage", 
+      name: "auth-storage",
     },
   ),
 );
 
-const roleId = useAuthStore((state) => state.user?.roleId);

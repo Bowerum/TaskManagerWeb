@@ -3,16 +3,17 @@ package response
 import "time"
 
 type TaskResponse struct {
-	TaskId int
+	TaskId int `json:"taskId"`
 
-	Title       string
-	Description string
+	Title       string `json:"title"`
+	Description string `json:"description"`
 
-	Status       string
-	CreatorName  string
-	AssigneeName string
+	Status string `json:"status"`
 
-	CreatedAt   time.Time
-	DueDate     *time.Time
-	CompletedAt *time.Time
+	CreatorName  string `json:"creatorName"`
+	AssigneeName string `json:"assigneeName"`
+
+	CreatedAt   time.Time  `json:"createdAt"`
+	DueDate     *time.Time `json:"dueDate"`
+	CompletedAt *time.Time `json:"completedAt"`
 }

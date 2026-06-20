@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-func GetTasksFiltered(statusId, assigneeId string) ([]response.TaskResponse, error) {
+func GetTasksFiltered(title, statusId, assigneeId string) ([]response.TaskResponse, error) {
 
 	query := taskSelectQuery
 
 	var conditions []string
 	var args []any
 	i := 1
-
+	fmt.Println("TITLE:", title)
 	if statusId != "" {
 		conditions = append(conditions, fmt.Sprintf("t.StatusId = @p%d", i))
 		args = append(args, statusId)
@@ -30,11 +30,22 @@ func GetTasksFiltered(statusId, assigneeId string) ([]response.TaskResponse, err
 		args = append(args, assigneeId)
 		i++
 	}
+	if title != "" {
+		conditions = append(
+			conditions,
+			fmt.Sprintf("t.Title LIKE @p%d", i),
+		)
+		args = append(args, "%"+title+"%")
+		i++
+	}
+	fmt.Println("QUERY:", query)
+	fmt.Println("ARGS:", args)
 
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
-
+	fmt.Println("QUERY:", query)
+	fmt.Println("ARGS:", args)
 	rows, err := database.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -77,7 +88,7 @@ func GetTaskModelById(id int) (models.TaskModel, error) {
 	if err != nil {
 		return task, err
 	}
-
+	fmt.Print(task)
 	return task, nil
 }
 func GetTaskById(id int) (response.TaskResponse, error) {
@@ -98,15 +109,16 @@ func GetTaskById(id int) (response.TaskResponse, error) {
 func CreateTask(req request.CreateTaskRequest) (response.TaskResponse, error) {
 
 	var taskId int
-
+	fmt.Print(req)
 	err := database.DB.QueryRow(`
-		INSERT INTO Tasks (Title, Description, CreatorId, AssigneeId, StatusId, CreatedAt)
+		INSERT INTO Tasks (Title, Description, CreatorId, AssigneeId, StatusId, CreatedAt, DueDate)
 		OUTPUT INSERTED.TaskId
-		VALUES (@p1, @p2, @p3, @p4, 1, GETDATE())
+		VALUES (@p1, @p2, @p3, @p4, 1, GETDATE(), @p5)
 	`, req.Title,
 		req.Description,
 		req.CreatorId,
 		req.AssigneeId,
+		req.DueDate,
 	).Scan(&taskId)
 
 	if err != nil {
@@ -127,9 +139,8 @@ func UpdateTask(id int, task models.TaskModel) error {
 	} else {
 		task.CompletedAt = nil
 	}
-
 	fmt.Println(task)
-
+	fmt.Println(id)
 	_, err := database.DB.Exec(`
         UPDATE Tasks
         SET
@@ -174,4 +185,39 @@ func DeleteTask(id int) error {
 	}
 
 	return nil
+}
+func GetTasksByAssignee(userId int) ([]response.TaskResponse, error) {
+	rows, err := database.DB.Query(taskSelectQuery+
+		` WHERE AssigneeId = @p1`, userId)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []response.TaskResponse
+
+	for rows.Next() {
+		var t response.TaskResponse
+
+		err := rows.Scan(
+			&t.TaskId,
+			&t.Title,
+			&t.Description,
+			&t.Status,
+			&t.CreatorName,
+			&t.AssigneeName,
+			&t.CreatedAt,
+			&t.DueDate,
+			&t.CompletedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tasks = append(tasks, t)
+	}
+
+	return tasks, nil
 }

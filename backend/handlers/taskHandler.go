@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"taskmanager/backend/models"
@@ -21,11 +22,11 @@ import (
 // @Failure 500 {object} map[string]string "Ошибка сервера"
 // @Router /tasks [get]
 func GetTasks(c *gin.Context) {
-
+	title := c.Query("title")
 	statusId := c.Query("statusId")
 	assigneeId := c.Query("assigneeId")
 
-	tasks, err := repository.GetTasksFiltered(statusId, assigneeId)
+	tasks, err := repository.GetTasksFiltered(title, statusId, assigneeId)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -96,6 +97,9 @@ func CreateTask(c *gin.Context) {
 	task, err := repository.CreateTask(req)
 
 	if err != nil {
+		fmt.Println("CREATE ERROR:", err)
+	}
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -154,11 +158,13 @@ func GetTaskForEdit(c *gin.Context) {
 // @Router /tasks/{id} [put]
 func UpdateTask(c *gin.Context) {
 
+	fmt.Println("update")
 	id := c.Param("id")
 
 	taskId, err := strconv.Atoi(id)
 
 	if err != nil {
+		fmt.Println("BIND ERROR:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Некорректный id",
 		})
@@ -168,6 +174,7 @@ func UpdateTask(c *gin.Context) {
 	var task models.TaskModel
 
 	if err := c.BindJSON(&task); err != nil {
+		fmt.Println("BIND ERROR:", err)
 		c.JSON(400, gin.H{"error": "bad json"})
 		return
 	}
@@ -219,4 +226,18 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Задача удалена",
 	})
+}
+func GetMyTasks(c *gin.Context) {
+
+	fmt.Print("аааааааааааааааааааааааааа")
+	userId := c.GetInt("userId")
+	fmt.Print("id polzaka")
+	fmt.Print(userId)
+	tasks, err := repository.GetTasksByAssignee(4)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, tasks)
 }

@@ -35,6 +35,7 @@ func main() {
 	router.POST("/login", handlers.Login)
 
 	router.GET("/tasks", handlers.GetTasks)
+	router.GET("/tasks/my-tasks", handlers.GetMyTasks)
 	router.GET("/tasks/edit/:id", handlers.GetTaskForEdit)
 	router.GET("/tasks/:id", handlers.GetTaskById)
 

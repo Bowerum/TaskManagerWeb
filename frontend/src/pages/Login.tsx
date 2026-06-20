@@ -39,10 +39,9 @@ export default function Login() {
         alert(data.error || "Ошибка входа");
         return;
       }
-
       authLogin(data.token, data.user);
-
-      navigate("/tasks");
+   //   window.location.href = "/tasks";
+      navigate("/tasks", { replace: true });
 
     }
     catch (err) {

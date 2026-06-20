@@ -1,0 +1,66 @@
+.tasks-filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tasks-filters input,
+.tasks-filters select {
+  padding: 8px;
+}
+
+.tasks-filters button {
+  padding: 8px 12px;
+  background: #111827;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tasks-table tbody tr:hover {
+  background: #f5f5f5;
+}
+
+.actions {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+}
+
+.create-btn {
+  background: #22c55e;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.tasks-table {
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tasks-table th,
+.tasks-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+}
+
+.details-btn {
+  background: #3b82f6;
+}
+
+.edit-btn {
+  background: #f59e0b;
+}
+
+.delete-btn {
+  background: #ef4444;
+}

@@ -13,7 +13,7 @@ func GetUsers() ([]response.UserResponse, error) {
                FirstName,
                LastName
         FROM Users
-		WHERE RoleId = 2
+		WHERE RoleId = 3
     `)
 
 	if err != nil {
